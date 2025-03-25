@@ -26,9 +26,14 @@ def __get_db_connection_details(db_settings):
         }
     else:
         db_connection_details = {
-            "db": db_settings.mongo_db_name,
-            "host": db_settings.mongo_db_host,
-            "port": db_settings.mongo_db_port,
+            "db": "platform",
+            "host": "localhost",
+            "port": 27017,
         }
+        # db_connection_details = {
+        #     "db": db_settings.mongo_db_name,
+        #     "host": db_settings.mongo_db_host,
+        #     "port": db_settings.mongo_db_port,
+        # }
 
     return db_connection_details

@@ -1,7 +1,9 @@
 # from app.adapters.repositories.channel_repository import ChannelRepository
+import os
 from typing import List, Optional
 
 from bson import ObjectId
+import google.generativeai as genai
 from app.adapters.repositories.content_repository import ContentRepository
 from app.domain.content import Content
 

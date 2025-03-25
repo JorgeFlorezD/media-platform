@@ -1,12 +1,17 @@
-from fastapi import APIRouter, Depends, Path, status
+import json
+from fastapi import APIRouter, Depends, Path, Query, status
 from dependency_injector.wiring import Provide, inject
 from fastapi.responses import JSONResponse
+import urllib
+import httpx
 
 from app.adapters.repositories.channel_repository import ChannelRepository
 from app.application.channel_service import ChannelService
 from app.application.content_service import ContentService
+from app.application.ia_api_service import IAApiService
 from app.containers import Container
 from app.domain.channel import Channel
+from app.util.exceptions import NotFoundException
 
 MAX_SUBCHANNEL_LEVEL = 1
 
@@ -28,15 +33,10 @@ async def get_channel_by_id(
         status.HTTP_404_NOT_FOUND: {"description": "Channel Not Found"},
     },
 ):
-    try:
-        channel = channel_service.get_channel_by_id(channel_id)
-        if not channel:
-            return _exception("Channel not found 1", status.HTTP_404_NOT_FOUND)
-        return channel
-    except BaseException as e:
-        return _exception(
-            f"An error as occurred {e}", status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    channel = channel_service.get_channel_by_id(channel_id)
+    if not channel:
+         raise NotFoundException("Channel not found")
+    return channel
 
 
 @router.get(
@@ -50,15 +50,10 @@ async def first_level_channels(
         status.HTTP_404_NOT_FOUND: {"description": "Channels Not Found"},
     },
 ):
-    try:
-        channels = channel_service.get_first_level_channels()
-        if not channels:
-            return _exception("Channels not found", status.HTTP_404_NOT_FOUND)
-        return channels
-    except BaseException as e:
-        return _exception(
-            f" * An error as occurred {e}", status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    channels = channel_service.get_first_level_channels()
+    if not channels:
+        raise NotFoundException("First level Channels not found")
+    return channels
 
 
 @router.get(
@@ -73,17 +68,13 @@ async def get_subchannels(
         status.HTTP_404_NOT_FOUND: {"description": "Channel Not Found"},
     },
 ):
-    try:
-        channels = channel_service.get_sub_channels(
-            channel_id, max_level=MAX_SUBCHANNEL_LEVEL
-        )
-        if channels is None:
-            return _exception("Channel not found", status.HTTP_404_NOT_FOUND)
-        return channels
-    except BaseException as e:
-        return _exception(
-            f"An error as occurred {e}", status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    channels = channel_service.get_sub_channels(
+        channel_id, max_level=MAX_SUBCHANNEL_LEVEL
+    )
+    if channels is None:
+        raise NotFoundException(f"SubChannels for channel {channel_id} not found")
+    
+    return channels
 
 
 @router.get(
@@ -95,22 +86,30 @@ async def get_content_by_id(
     content_id: str = Path(..., description="Content Id"),
     content_service: ContentService = Depends(Provide[Container.content_service]),
     responses={
+        status.HTTP_404_NOT_FOUND: {"description": "Content Not Found"},
+    },
+):
+    content = content_service.get_content_by_id(content_id)
+    if not content:
+        raise NotFoundException("Content not found")
+    return content
+
+
+@router.get(
+    path="/info",
+    name="Get content info by its title",
+)
+@inject
+async def get_info_by_title(
+    title: str = Query(..., description="Title of a Movie or TV show"),
+    ai_api_service: IAApiService = Depends(Provide[Container.ia_info_service]),
+    responses={
         status.HTTP_404_NOT_FOUND: {"description": "Channel Not Found"},
     },
 ):
-    try:
-        content = content_service.get_content_by_id(content_id)
-        if not content:
-            return _exception("Content not found", status.HTTP_404_NOT_FOUND)
-        return content
-    except BaseException as e:
-        return _exception(
-            f"An error as occurred {e}", status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-
-def _exception(message, code):
-    return JSONResponse(
-        status_code=code,
-        content={"detail": [{"msg": message}]},
-    )
+    result = ai_api_service.get_genre_and_synopsis(title)
+    
+    if not result:
+        raise NotFoundException("Title not found")
+    
+    return result
