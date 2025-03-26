@@ -21,17 +21,7 @@ class TestMadiaAPI:
     @pytest.fixture
     def client(self):
         return TestClient(app)
-    
-    @pytest.fixture
-    def mock_ai_model(self):
-        mock_model = MagicMock()
-        return mock_model
-    
-    # @pytest.fixture
-    # def ai_api_service(self, mock_ai_model):
-    #     return AIApiService(
-    #         model=mock_ai_model,
-    #     )
+
         
     def test_content_suggestion_success(self, client, mocker: MockerFixture):
         text = TestDataProvider.json_text_example()
@@ -60,6 +50,7 @@ class TestMadiaAPI:
         ]
     )
     def test_content_suggestion_not_found(self, client, mocker: MockerFixture, return_value):
+        title = "Back to the future"
         mocker.patch(
             f"{GenAIModel.__module__}.{GenAIModel._create_model.__qualname__}",
             return_value=None,
@@ -69,5 +60,8 @@ class TestMadiaAPI:
             return_value=return_value,
         )
         
-        with pytest.raises(NotFoundException):
-            client.get("/media/content-suggestions?title=Back to the future")
+        response = client.get(f"/media/content-suggestions?title={title}")
+        
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json().get("detail") == f"This title cannot be found: {title}"
+        

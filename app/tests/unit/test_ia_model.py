@@ -1,5 +1,3 @@
-import os
-import sys
 from unittest.mock import MagicMock
 
 from app.application.ai_api_service import AIApiService
@@ -41,8 +39,10 @@ class TestAIAPIService:
                 "json123"  + TestDataProvider.json_text_example() + "123", 
                 TestDataProvider.json_text_example()
             ),
+            
             # test_generate_content_less_than_ten_chars_returns_none:
             ("text", None), 
+            
             # test_generate_content_has_ten_chars_returns_none:
             ("1234567890", None),
         ],

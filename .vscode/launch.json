@@ -23,8 +23,9 @@
             "request": "launch",
             "module": "pytest",
             "args": [
+                "-vv",
                 "-s",
-                "app/tests/integration/",
+                "app/tests/",
             ],
             "jinja": true,
             "justMyCode": false

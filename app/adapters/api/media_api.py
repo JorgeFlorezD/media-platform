@@ -102,7 +102,7 @@ async def get_content_by_id(
     name="Get content suggested info by its title",
 )
 @inject
-async def get_info_by_title(
+async def get_content_suggestion_by_title(
     title: str = Query(..., description="Title of a Movie or TV show"),
     ai_api_service: AIApiService = Depends(Provide[Container.ai_api_service]),
     responses={
@@ -112,6 +112,6 @@ async def get_info_by_title(
     result = ai_api_service.get_content_suggestion(title)
     
     if not result:
-        raise NotFoundException("This title cannot be found: {title}")
+        raise NotFoundException(f"This title cannot be found: {title}")
     
     return result

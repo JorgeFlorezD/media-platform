@@ -42,16 +42,13 @@ class TestAIAPIService:
     @pytest.mark.parametrize(
         "input_text",
         [
-            #  test_create_json_invalid_json_raises_exception:
             "invalid json",
-            #  test_create_json_with_empty_text_raise_exception:
             "",
-            #  test_create_json_with_malformed_json_raise_exception:
             '{"title": "title test 1", "synopsis": "synopsis 1'
         ]
      )
     def test_create_json_invalid_json_raises_exception(self, ai_api_service, input_text):
-        with pytest.raises(ExternalServiceException, match="Could not process the information"):
+        with pytest.raises(ExternalServiceException, match="There is a problem processing the information"):
             ai_api_service._create_json(input_text)
            
             
