@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 from app.application.ai_api_service import AIApiService
 import pytest
@@ -8,7 +8,7 @@ from app.tests.test_data_provider import TestDataProvider
 from app.util.exceptions import ExternalServiceException
 
 
-class TestAIAPIService:
+class TestAIModel:
     @pytest.fixture
     def mock_genai_model(self):
         mock_model = MagicMock()
@@ -30,7 +30,7 @@ class TestAIAPIService:
         
         assert result == expected_result
 
-
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "mock_response_text, expected_result",
         [
@@ -47,20 +47,20 @@ class TestAIAPIService:
             ("1234567890", None),
         ],
     )
-    def test_generate_content(self, mock_genai_model, mock_response_text, expected_result):
+    async def test_generate_content(self, mock_genai_model, mock_response_text, expected_result):
         mock_genai_model.model.generate_content.return_value.text = mock_response_text
 
-        result = mock_genai_model.generate_content("Back to the future")
+        result = await mock_genai_model.generate_content("Back to the future")
 
         assert result == expected_result
         mock_genai_model.model.generate_content.assert_called_once()
 
-
-    def test_generate_content_exception(self, mock_genai_model):        
+    @pytest.mark.asyncio
+    async def test_generate_content_exception(self, mock_genai_model):        
         mock_genai_model.model.generate_content.side_effect = Exception("Spmething when wrotn")
 
         with pytest.raises(
             ExternalServiceException, 
             match="Cannot get the information for the title: back to the future"
         ):
-            mock_genai_model.generate_content("back to the future")
+            await mock_genai_model.generate_content("back to the future")

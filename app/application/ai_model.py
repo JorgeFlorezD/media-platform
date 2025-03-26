@@ -8,5 +8,5 @@ class AIModel(ABC):
     in the AI service
     '''
     @abstractmethod
-    def generate_content(self, prompt: str) -> Optional[str]:
+    async def generate_content(self, prompt: str) -> Optional[str]:
         pass

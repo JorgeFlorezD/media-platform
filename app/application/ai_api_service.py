@@ -18,8 +18,8 @@ class AIApiService:
     ):
         self.model = model
         
-    def get_content_suggestion(self, title: str):
-        text = self.model.generate_content(title)
+    async def get_content_suggestion(self, title: str):
+        text = await self.model.generate_content(title)
         if text:
             return self._create_json(text)
         else:

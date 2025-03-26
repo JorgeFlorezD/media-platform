@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 from app.application.ai_api_service import AIApiService
 import pytest
@@ -17,9 +17,8 @@ class TestAIAPIService:
     
     @pytest.fixture
     def ai_api_service(self, mock_ai_model):
-        return AIApiService(
-            model=mock_ai_model,
-        )
+        return AIApiService(model=mock_ai_model)
+
 
         
     def test_crate_json_success(self, ai_api_service):
@@ -58,18 +57,18 @@ class TestAIAPIService:
         with pytest.raises(Exception):
             ai_api_service._create_json(text)
 
-    
-    def test_get_content_success(self, ai_api_service, mock_ai_model):
+    @pytest.mark.asyncio
+    async def test_get_content_success(self, ai_api_service, mock_ai_model):
         title = "title"
         text = test_data_provider.TestDataProvider.json_text_example()
-        mock_ai_model.generate_content.return_value = text
+        mock_ai_model.generate_content = AsyncMock(return_value=text)
         
-        result = ai_api_service.get_content_suggestion(title)
+        result = await ai_api_service.get_content_suggestion(title)
         
         assert result == ai_api_service._create_json(text)
         mock_ai_model.generate_content.assert_called_once_with(title)
 
-
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "mock_return_value", 
         [
@@ -77,16 +76,16 @@ class TestAIAPIService:
             None
         ]
     )
-    def test_get_content(
+    async def test_get_content(
         self,
         ai_api_service, 
         mock_ai_model, 
         mock_return_value
     ):
         title = "title"
-        mock_ai_model.generate_content.return_value = mock_return_value
-        
-        result = ai_api_service.get_content_suggestion(title)
+        mock_ai_model.generate_content = AsyncMock(return_value=mock_return_value)
+
+        result = await ai_api_service.get_content_suggestion(title)
         
         assert result is None
         mock_ai_model.generate_content.assert_called_once_with(title)        

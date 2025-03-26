@@ -26,14 +26,15 @@ router = APIRouter(
 @router.get(
     path="/channel/{channel_id}",
     name="Get a channel info",
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},            
+        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
+    },
 )
 @inject
 async def get_channel_by_id(
     channel_id: str = Path(..., description="Channel Id"),
     channel_service: ChannelService = Depends(Provide[Container.channel_service]),
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Channel Not Found"},
-    },
 ):
     channel = channel_service.get_channel_by_id(channel_id)
     if not channel:
@@ -44,13 +45,14 @@ async def get_channel_by_id(
 @router.get(
     path="/first_level_channels",
     name="Get first level channels",
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},            
+        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
+    },
 )
 @inject
 async def first_level_channels(
     channel_service: ChannelService = Depends(Provide[Container.channel_service]),
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Channels Not Found"},
-    },
 ):
     channels = channel_service.get_first_level_channels()
     if not channels:
@@ -61,14 +63,15 @@ async def first_level_channels(
 @router.get(
     path="/channel/{channel_id}/channels",
     name="Get sub channels of a channel",
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},            
+        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
+    },
 )
 @inject
 async def get_subchannels(
     channel_id: str = Path(..., description="Channel Id"),
     channel_service: ChannelService = Depends(Provide[Container.channel_service]),
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Channel Not Found"},
-    },
 ):
     channels = channel_service.get_sub_channels(
         channel_id, max_level=MAX_SUBCHANNEL_LEVEL
@@ -82,14 +85,15 @@ async def get_subchannels(
 @router.get(
     path="/content/{content_id}",
     name="Get content info",
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},            
+        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
+    },
 )
 @inject
 async def get_content_by_id(
     content_id: str = Path(..., description="Content Id"),
     content_service: ContentService = Depends(Provide[Container.content_service]),
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Content Not Found"},
-    },
 ):
     content = content_service.get_content_by_id(content_id)
     if not content:
@@ -100,16 +104,17 @@ async def get_content_by_id(
 @router.get(
     path="/content-suggestions",
     name="Get content suggested info by its title",
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},            
+        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
+    },
 )
 @inject
 async def get_content_suggestion_by_title(
     title: str = Query(..., description="Title of a Movie or TV show"),
     ai_api_service: AIApiService = Depends(Provide[Container.ai_api_service]),
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
-    },
 ):
-    result = ai_api_service.get_content_suggestion(title)
+    result = await ai_api_service.get_content_suggestion(title)
     
     if not result:
         raise NotFoundException(f"This title cannot be found: {title}")
