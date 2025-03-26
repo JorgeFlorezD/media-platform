@@ -26,13 +26,13 @@ def create_app() -> FastAPI:
 
     application.include_router(media_api.router)
 
-    application.add_exception_handler(NotFoundException, external_service_exception_handler)  # type: ignore
-    application.add_exception_handler(ExternalServiceException, external_service_exception_handler)  # type: ignore
-    application.add_exception_handler(RequestValidationError, request_validation_exception_handler)  # type: ignore
-    application.add_exception_handler(ValidationError, validation_error_exception_handler)  # type: ignore
-    application.add_exception_handler(ValueError, value_error_handler)  # type: ignore
-    application.add_exception_handler(NotControlledException, not_controlled_exception_handler)  # type: ignore
-    application.add_exception_handler(InvalidId, invalid_id_handler)  # type: ignore
+    application.add_exception_handler(NotFoundException, external_service_exception_handler)
+    application.add_exception_handler(ExternalServiceException, external_service_exception_handler)
+    application.add_exception_handler(RequestValidationError, request_validation_exception_handler)
+    application.add_exception_handler(ValidationError, validation_error_exception_handler)
+    application.add_exception_handler(ValueError, value_error_handler)
+    application.add_exception_handler(NotControlledException, not_controlled_exception_handler)
+    application.add_exception_handler(InvalidId, invalid_id_handler)
     
     application.add_event_handler("startup", connect_db_client(application))
     application.add_event_handler("startup", create_logger_client(application))

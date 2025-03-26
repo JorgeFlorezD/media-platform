@@ -18,8 +18,6 @@ class TestAIAPIService:
     @pytest.fixture
     def ai_api_service(self, mock_ai_model):
         return AIApiService(model=mock_ai_model)
-
-
         
     def test_crate_json_success(self, ai_api_service):
         text = '''

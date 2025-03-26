@@ -1,4 +1,3 @@
-import json
 from fastapi import APIRouter, Depends, Path, Query, status
 from dependency_injector.wiring import Provide, inject
 from fastapi.responses import JSONResponse
