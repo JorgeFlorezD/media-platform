@@ -1,0 +1,51 @@
+[
+  {
+    "_id": {
+      "$oid": "0000000000000000000000b1"
+    },
+    "file": "file 1",
+    "metadata": "{'genre': 'terror'}",
+    "rating": 4
+  },
+  {
+    "_id": {
+      "$oid": "0000000000000000000000b2"
+    },
+    "file": "file 2",
+    "metadata": "{'genre': 'action'}",
+    "rating": 6
+  },
+  {
+    "_id": {
+      "$oid": "0000000000000000000000b3"
+    },
+    "file": "file 3",
+    "metadata": "{'genre': 'sci-fi'}",
+    "rating": 8
+  },
+  {
+    "_id": {
+      "$oid": "0000000000000000000000b4"
+    },
+    "file": "file 4",
+    "metadata": "{'genre': 'drama'}",
+    "rating": 7
+  },
+  {
+    "_id": {
+      "$oid": "0000000000000000000000b5"
+    },
+    "file": "file 5",
+    "metadata": "{'genre': 'action'}",
+    "rating": 5
+  },
+  {
+    "_id": {
+      "$oid": "0000000000000000000000b6"
+    },
+    "file": "file 6",
+    "metadata": "{'genre': 'romance'}",
+    "rating": 9
+  }
+]
+ 
