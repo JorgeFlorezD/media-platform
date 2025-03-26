@@ -2,18 +2,20 @@ import json
 from fastapi import APIRouter, Depends, Path, Query, status
 from dependency_injector.wiring import Provide, inject
 from fastapi.responses import JSONResponse
-import urllib
-import httpx
+
 
 from app.adapters.repositories.channel_repository import ChannelRepository
 from app.application.channel_service import ChannelService
 from app.application.content_service import ContentService
-from app.application.ia_api_service import IAApiService
+from app.application.ai_api_service import AIApiService
 from app.containers import Container
 from app.domain.channel import Channel
 from app.util.exceptions import NotFoundException
+from app.util.logging.logger import Log
+
 
 MAX_SUBCHANNEL_LEVEL = 1
+
 
 router = APIRouter(
     prefix="/media",
@@ -96,20 +98,20 @@ async def get_content_by_id(
 
 
 @router.get(
-    path="/info",
-    name="Get content info by its title",
+    path="/content-suggestions",
+    name="Get content suggested info by its title",
 )
 @inject
 async def get_info_by_title(
     title: str = Query(..., description="Title of a Movie or TV show"),
-    ai_api_service: IAApiService = Depends(Provide[Container.ia_info_service]),
+    ai_api_service: AIApiService = Depends(Provide[Container.ai_api_service]),
     responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Channel Not Found"},
+        status.HTTP_404_NOT_FOUND: {"description": "Title Not Found"},
     },
 ):
-    result = ai_api_service.get_genre_and_synopsis(title)
+    result = ai_api_service.get_content_suggestion(title)
     
     if not result:
-        raise NotFoundException("Title not found")
+        raise NotFoundException("This title cannot be found: {title}")
     
     return result

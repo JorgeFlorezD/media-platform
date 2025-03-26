@@ -5,7 +5,6 @@ from bson import ObjectId
 from app.adapters.repositories.channel_repository import ChannelRepository
 from app.application.content_service import ContentService
 from app.domain.channel import Channel
-from app.domain.content import Content
 
 
 class ChannelService:

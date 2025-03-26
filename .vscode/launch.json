@@ -16,6 +16,18 @@
             ],
             "jinja": true,
             "justMyCode": false
+        },
+        {
+            "name": "Pytest Debugger: Pytest",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "-s",
+                "app/tests/integration/",
+            ],
+            "jinja": true,
+            "justMyCode": false
         }
     ]
 }
