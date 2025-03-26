@@ -1,3 +1,4 @@
+from typing import Optional
 from bson import ObjectId
 from app.adapters.repositories.channel_db import ChannelDB
 from app.adapters.repositories.content_db import ContentDB

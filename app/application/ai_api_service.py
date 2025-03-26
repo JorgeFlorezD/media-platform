@@ -1,6 +1,8 @@
 import json
 from typing import Optional
+from app.adapters.repositories.content_mapper import ContentMapper
 from app.application.ai_model import AIModel
+from app.domain.content_suggestion import ContentSuggestionsResponse
 from app.util.exceptions import ExternalServiceException
 
 import google.generativeai as genai
@@ -27,7 +29,16 @@ class AIApiService:
     
     def _create_json(self, text: str) -> Optional[dict]:
         try:
-            return json.loads(text)
+            json_data = json.loads(text)
+            ContentSuggestionsResponse.model_validate(json_data)
+            return json_data
         except json.JSONDecodeError as e:
-            Log.logger.error(f"Cannot create JSON file. Error: {e}. Text fo be processed: {text}")
+            Log.logger.error(
+                f"JSON Decode Error: {e}. Text: {text}"
+            )
+            raise ExternalServiceException(f"There is a problem processing the information")
+        except Exception as e:
+            Log.logger.error(
+                f"Unexpected error creating JSON: {e}. Text: {text}"
+            )
             raise ExternalServiceException(f"There is a problem processing the information")

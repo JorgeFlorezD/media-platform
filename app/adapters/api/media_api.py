@@ -11,7 +11,6 @@ from app.application.ai_api_service import AIApiService
 from app.containers import Container
 from app.domain.channel import Channel
 from app.util.exceptions import NotFoundException
-from app.util.logging.logger import Log
 
 
 MAX_SUBCHANNEL_LEVEL = 1
