@@ -49,7 +49,7 @@ class ChannelService:
                     first_level.id
                 )
                 rating = self._get_ratings_from_children(
-                    sub_channels, ObjectId(first_level.id), csv
+                    sub_channels, ObjectId(first_level.id), csv  # type: ignore
                 )
 
             csv[first_level.title] = rating
@@ -62,7 +62,7 @@ class ChannelService:
         children = [
             children
             for children in channels
-            if channel_id in children.get("parents")
+            if channel_id in children.get("parents", [])
         ]
         try:
             rating = 0.0
@@ -70,17 +70,17 @@ class ChannelService:
                 # Avoid already rating channel. It could happens when a channel have many parent channels.
                 child_rating = 0.0
                 if child.get("title") in csv:
-                    child_rating = csv.get(child.get("title"))
+                    child_rating = csv.get(child.get("title"))  # type: ignore
                 elif child.get("contents"):
                     # If contents found, then calculate the average rating of them
                     print(f"Getting content average for channel {child.get('_id')}")
-                    content_ids: List[ObjectId] = child.get("contents")
+                    content_ids: List[ObjectId] = child.get("contents")  # type: ignore
                     child_rating = self._calculate_rating(content_ids)
                 else:
                     # Have subchannels, so we need to get ratings from them
                     print(f"Getting rating in  subchannel for {child.get('_id')}")
                     child_rating = self._get_ratings_from_children(
-                        channels, child.get("_id"), csv
+                        channels, child.get("_id"), csv  # type: ignore
                     )
                 csv[child.get("title")] = child_rating
                 rating += child_rating
@@ -94,17 +94,23 @@ class ChannelService:
 
     def _calculate_rating(self, content_ids: List[ObjectId]) -> float:
         contents = self.content_service.get_content_by_list(content_ids)
-        rating = sum([content.rating for content in contents]) / len(contents)
+        if contents:
+            rating = sum(content.rating for content in contents) / len(contents)
+        else:
+            rating = 0.0
         return rating
 
 
     def _set_contents(self, channels: Optional[List[Channel]]) -> List[Channel]:
+        if channels is None:
+            return []
         for channel in channels:
             if channel.contents:
                 contents = self.content_service.get_content_by_list(
                     [ObjectId(content) for content in channel.contents]
                 )
-                rating = sum([content.rating for content in contents]) / len(contents)
-                channel.content_data = contents
-                channel.rating = rating
+                if contents:
+                    rating = sum(content.rating for content in contents) / len(contents)
+                    channel.content_data = contents
+                    channel.rating = rating
         return channels

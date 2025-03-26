@@ -10,7 +10,6 @@ def connect_db_client(app: FastAPI) -> Callable:
     async def execute():
         try:
             db_settings: DatabaseSettings = app.container.database_settings()
-            print(f" **** {db_settings}")
             connect(**__get_db_connection_details(db_settings))
         except Exception as e:
             return(f" Exception connecting to database")

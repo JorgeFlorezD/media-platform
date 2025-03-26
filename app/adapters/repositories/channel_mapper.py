@@ -21,14 +21,14 @@ class ChannelMapper():
     def to_domain_from_dict(self, channel_db: dict) -> Channel:
         return Channel(
             id=str(channel_db.get("_id")),
-            title=channel_db.get("title"),
-            language=channel_db.get("language"),
-            picture=channel_db.get("picture"),
+            title=channel_db.get("title", ""),
+            language=channel_db.get("language", ""),
+            picture=channel_db.get("picture", ""),
             parents=[
-                str(channel) for channel in channel_db.get("parents")
+                str(channel) for channel in channel_db.get("parents", [])
             ] if channel_db.get("parents") else None,
             contents=[
-                str(content) for content in channel_db.get("contents")
+                str(content) for content in channel_db.get("contents", [])
             ] if channel_db.get("contents") else None,
         )
 
